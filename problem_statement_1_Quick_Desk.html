@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>QuickDesk – Pro Dashboard Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    /* --- Professional Style Refresh --- */
+    :root {
+      /* Color Palette */
+      --primary: #4A55A2;      /* A deep, professional blue */
+      --secondary: #7895CB;   /* A softer, complementary blue */
+      --accent: #A0BFE0;       /* A light, airy blue for accents */
+      --text-dark: #2C3333;    /* Main text color for readability */
+      --text-light: #5F6F94;   /* Lighter text for secondary info */
+      --bg-main: #F8F9FA;       /* A very light grey for the main background */
+      --bg-card: #FFFFFF;       /* Clean white for cards */
+      --border-color: #E9ECEF;  /* Subtle border color */
+      --danger: #D9534F;       /* A standard, clear red for errors */
+      --success: #5CB85C;       /* A standard, clear green for success */
+      --warning: #f0ad4e;       /* A standard, clear orange for warnings */
+      --info: #5bc0de;         /* A standard, clear blue for info */
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', 'Segoe UI', Arial, Verdana, sans-serif;
+      background: var(--bg-main);
+      color: var(--text-dark);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden; /* Prevent horizontal scroll */
+    }
+
+    /* --- Sidebar Navigation & Layout --- */
+    .sidebar {
+        width: 260px;
+        background: var(--bg-main);
+        border-right: 1px solid var(--border-color);
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        z-index: 100;
+        display: flex;
+        flex-direction: column;
+        padding: 20px 12px;
+        box-sizing: border-box;
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .sidebar-profile {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        margin-bottom: 24px;
+    }
+
+    .sidebar-profile .avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--primary);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.2em;
+        flex-shrink: 0;
+    }
+
+    .sidebar-profile .user-info {
+        line-height: 1.3;
+        overflow: hidden;
+    }
+
+    .sidebar-profile .user-name {
+        font-weight: 600;
+        color: var(--text-dark);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .sidebar-profile .user-role {
+        font-size: 0.8em;
+        font-weight: 600;
+        color: var(--text-light);
+        background-color: var(--border-color);
+        padding: 2px 6px;
+        border-radius: 4px;
+        display: inline-block;
+        margin-top: 4px;
+    }
+
+    .sidebar .nav-links {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        flex-grow: 1;
+    }
+
+    .nav-link {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 12px 16px;
+        border-radius: 8px;
+        color: var(--text-light);
+        font-weight: 500;
+        font-size: 0.95em;
+        cursor: pointer;
+        border: none;
+        background: transparent;
+        width: 100%;
+        text-align: left;
+        transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .nav-link svg {
+        width: 20px;
+        height: 20px;
+        stroke-width: 2;
+        flex-shrink: 0;
+        color: var(--text-light);
+        transition: color 0.2s ease;
+    }
+
+    .nav-link:hover {
+        background-color: #E9ECEF;
+        color: var(--text-dark);
+    }
+    
+    .nav-link:hover svg {
+        color: var(--text-dark);
+    }
+
+    .nav-link.active {
+        background-color: #E9ECEF;
+        color: var(--primary);
+        font-weight: 700;
+    }
+    
+    .nav-link.active svg {
+        color: var(--primary);
+    }
+
+    .sidebar .logout-btn {
+        margin-top: auto;
+    }
+    
+    .content-wrapper {
+        margin-left: 260px;
+        transition: margin-left 0.3s ease-in-out;
+    }
+
+    .admin-bar {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: saturate(180%) blur(10px);
+      box-shadow: none;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 1em;
+      padding: 16px 32px;
+      position: sticky;
+      top: 0;
+      z-index: 15;
+      box-sizing: border-box;
+    }
+    
+    .main, .form-ct {
+      max-width: 1200px;
+      margin: auto;
+    }
+    .main {
+      padding: 32px 24px;
+      min-height: 80vh;
+    }
+    .flex { display: flex; gap: 24px; flex-wrap: wrap; }
+    .col {
+      background: var(--bg-card);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border-color);
+    }
+    .col-lg { flex: 1.85; min-width: 330px; }
+
+    /* --- Buttons & Interactive Elements --- */
+    .btn, button {
+      background: var(--primary);
+      color: #fff;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 0.95em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s ease, transform 0.1s ease;
+    }
+    .btn:hover, button:hover {
+      background: #3a438a; /* Darker shade of primary */
+    }
+    .btn:active, button:active {
+      transform: scale(0.98);
+    }
+    .btn-hollow {
+      background: var(--bg-card);
+      color: var(--primary);
+      border: 1px solid var(--primary);
+    }
+    .btn-hollow:hover {
+      background: #f7faff;
+      color: #3a438a;
+    }
+    .btn[disabled], button[disabled] {
+      opacity: .6;
+      cursor: not-allowed;
+    }
+
+    /* --- Forms & Auth --- */
+    .auth-card {
+      background: var(--bg-card);
+      box-shadow: var(--shadow-lg);
+      border-radius: 16px;
+      max-width: 400px;
+      margin: 70px auto;
+      padding: 40px;
+      border: 1px solid var(--border-color);
+      animation: fadeInUp .6s ease-out;
+    }
+    @keyframes fadeInUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .auth-card h2 {
+      margin-bottom: 24px;
+      color: var(--primary);
+      text-align: center;
+      font-weight: 700;
+    }
+    .toggle-auth {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .toggle-auth .btn { width: 100%; }
+    label {
+      margin-bottom: 6px;
+      display: block;
+      font-weight: 600;
+      color: var(--text-light);
+      font-size: 0.9em;
+    }
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      background: var(--bg-main);
+      padding: 12px;
+      margin-bottom: 16px;
+      font-size: 1em;
+      color: var(--text-dark);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      box-sizing: border-box;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(74, 85, 162, 0.2);
+    }
+
+    /* --- DASHBOARD (UPDATED) --- */
+    .main-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+    }
+    .main-header h1 {
+        font-size: 2em;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin: 0;
+    }
+    .notification-bell {
+        color: var(--text-light);
+        cursor: pointer;
+    }
+    .notification-bell:hover {
+        color: var(--text-dark);
+    }
+
+    .quickdash-row {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 24px;
+        align-items: start;
+    }
+
+    .quickdash-main-new {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    .stat-cards-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 24px;
+    }
+
+    .stat-card {
+        background: var(--bg-card);
+        border-radius: 12px;
+        padding: 24px;
+        border: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow);
+    }
+
+    .stat-card-info .lbl {
+        font-size: 0.95em;
+        color: var(--text-light);
+        font-weight: 500;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    .stat-card-info .val {
+        font-size: 2.2em;
+        font-weight: 700;
+        color: var(--text-dark);
+    }
+
+    .stat-card-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .stat-card-icon svg {
+        width: 24px;
+        height: 24px;
+    }
+    .stat-card-icon.open { background-color: #eaf2ff; }
+    .stat-card-icon.open svg { color: #4a7dff; }
+    .stat-card-icon.progress { background-color: #fff8e1; }
+    .stat-card-icon.progress svg { color: #f59e0b; }
+    .stat-card-icon.resolved { background-color: #e8f5e9; }
+    .stat-card-icon.resolved svg { color: #34a853; }
+
+
+    .recent-tickets-card {
+        background: var(--bg-card);
+        border-radius: 12px;
+        border: 1px solid var(--border-color);
+        padding: 24px;
+    }
+
+    .recent-tickets-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    .recent-tickets-header h2 {
+        margin: 0;
+        font-size: 1.25em;
+        font-weight: 600;
+    }
+    .recent-tickets-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .recent-tickets-actions select {
+        margin-bottom: 0;
+        width: auto;
+    }
+    .recent-tickets-actions .btn {
+        padding: 8px 12px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .table-wrapper {
+        overflow-x: auto;
+    }
+
+    .tickets-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9em;
+    }
+    .tickets-table th, .tickets-table td {
+        padding: 12px 16px;
+        text-align: left;
+        border-bottom: 1px solid var(--border-color);
+        white-space: nowrap;
+    }
+    .tickets-table th {
+        color: var(--text-light);
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.85em;
+        background-color: #fcfdff;
+    }
+    .tickets-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+    .tickets-table tbody tr:hover {
+        background-color: var(--bg-main);
+    }
+
+    /* Status & Priority Badges */
+    .status, .priority {
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 0.9em;
+        text-transform: capitalize;
+    }
+    .status.open { background: #eaf2ff; color: #4a7dff; }
+    .status.progress { background: #fff8e1; color: #f59e0b; }
+    .status.res { background: #dff0d8; color: #3c763d; }
+    .status.closed { background: #f2dede; color: #a94442; }
+
+    .priority.low { background: #e8f5e9; color: #34a853; }
+    .priority.medium { background: #fff8e1; color: #f59e0b; }
+    .priority.high { background: #fde2e2; color: #d9534f; }
+
+    .quickdash-side {
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .quickdash-side > div {
+        background: var(--bg-card);
+        border-radius: 12px;
+        padding: 24px;
+        border: 1px solid var(--border-color);
+    }
+    .dash-side-section-hdr { font-size: 1.1em; font-weight: 700; margin-bottom: 12px; color: var(--text-dark); }
+    .dash-activity { margin: 0; padding: 0; list-style: none; font-size: 0.95em; }
+    .dash-activity li {
+      border-left: 3px solid var(--accent);
+      padding: 10px 12px;
+      margin-bottom: 8px;
+      background: #f8f9fa;
+      border-radius: 6px;
+    }
+    
+    /* --- General Utilities & Components --- */
+    .hide { display: none !important; }
+    .danger { color: var(--danger); font-weight: 500; }
+    .accent { color: var(--primary); }
+    .badge {
+      background: #eef2ff;
+      color: var(--primary);
+      padding: 4px 10px;
+      border-radius: 99px;
+      font-size: 0.85em;
+      font-weight: 600;
+      display: inline-block;
+    }
+    .profile-img {
+      border-radius: 50%;
+      width: 54px;
+      height: 54px;
+      background: var(--accent);
+      color: var(--primary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 16px;
+      border: 2px solid #fff;
+      box-shadow: 0 0 0 2px var(--primary);
+      font-size: 2em;
+      font-weight: 700;
+    }
+    
+    .menu-toggle {
+        display: none;
+        position: fixed;
+        top: 16px;
+        left: 16px;
+        z-index: 101;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        width: 40px;
+        height: 40px;
+        font-size: 24px;
+        line-height: 40px;
+        text-align: center;
+        cursor: pointer;
+    }
+
+    /* --- Responsiveness --- */
+    @media(max-width:1100px){
+        .quickdash-row {
+            grid-template-columns: 1fr;
+        }
+    }
+    @media(max-width:950px){ .main, .form-ct{padding-left:16px; padding-right:16px;} .flex{gap:16px;}}
+    @media(max-width:768px){
+        .sidebar {
+            transform: translateX(-100%);
+        }
+        .sidebar.open {
+            transform: translateX(0);
+            box-shadow: var(--shadow-lg);
+        }
+        .content-wrapper {
+            margin-left: 0;
+        }
+        .menu-toggle {
+            display: block;
+        }
+    }
+    @media(max-width:640px){
+      .main, .form-ct { padding: 16px; }
+      .flex { flex-direction: column; }
+      .col, .col-lg { padding: 16px; }
+    }
+
+    /* Modal Styling */
+    .modal-bg {
+        display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%;
+        overflow: auto; background-color: rgba(0,0,0,0.5); align-items: center; justify-content: center;
+    }
+    .modal {
+        background-color: #fff; margin: auto; padding: 25px; border: 1px solid #888;
+        width: 80%; max-width: 400px; border-radius: 12px; text-align: center;
+        box-shadow: var(--shadow-lg);
+    }
+  </style>
+</head>
+<body>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modal-bg">
+    <div class="modal" id="modal">
+        <span id="modal-message"></span><br><br>
+        <button class="btn" onclick="closeModal()">OK</button>
+    </div>
+</div>
+
+<!-- AUTHENTICATION SECTION -->
+<div id="auth-section" class="auth-card">
+  <h2>QuickDesk Login</h2>
+  <div class="toggle-auth">
+    <button class="btn" id="show-login-btn" onclick="toggleAuth('login')">Login</button>
+    <button class="btn btn-hollow" id="show-register-btn" onclick="toggleAuth('register')">Register</button>
+  </div>
+  <form id="login-form" autocomplete="off">
+    <div id="login-error" class="danger" style="display:none; margin-bottom: 12px;"></div>
+    <label for="login-email">Email</label>
+    <input type="email" id="login-email" required autocomplete="username">
+    <label for="login-password">Password</label>
+    <input type="password" id="login-password" required autocomplete="current-password">
+    <button type="submit" class="btn" style="width:100%; margin-top: 10px;">Login</button>
+  </form>
+  <form id="register-form" class="hide" autocomplete="off">
+    <div id="register-error" class="danger" style="display:none; margin-bottom: 12px;"></div>
+    <label for="reg-name">Display Name</label><input id="reg-name" maxlength="32" required>
+    <label for="reg-email">Email</label><input type="email" id="reg-email" maxlength="50" required>
+    <label for="reg-role">Role</label>
+    <select id="reg-role">
+      <option>End User</option><option>Support Agent</option><option>Admin</option>
+    </select>
+    <label for="reg-password">Password</label><input type="password" id="reg-password" minlength="3" maxlength="20" required>
+    <button type="submit" class="btn" style="width:100%; margin-top: 10px;">Register</button>
+  </form>
+  <div style="color: var(--text-light); margin-top: 20px; font-size: 0.9em; text-align: center;">
+    Try <b>admin@q.com / admin</b>, <b>support@q.com / support</b>, or <b>user@q.com / user</b>
+  </div>
+</div>
+
+<!-- MAIN APP INTERFACE (UPDATED) -->
+<div id="sidebar" class="sidebar hide">
+    <!-- User Profile Section -->
+    <div id="sidebar-profile" class="sidebar-profile">
+        <!-- Content generated by JS -->
+    </div>
+
+    <!-- Navigation Links -->
+    <div class="nav-links">
+        <button class="nav-link" data-view="dashboard" onclick="goto('dashboard')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            <span>Dashboard</span>
+        </button>
+        <button class="nav-link" data-view="questions" onclick="goto('questions')">
+             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+            <span>Tickets</span>
+        </button>
+        <button class="nav-link" data-view="ask" onclick="goto('ask')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>
+            <span>Raise Ticket</span>
+        </button>
+        <button class="nav-link" data-view="profile" onclick="goto('profile')">
+             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            <span>Profile</span>
+        </button>
+        <button class="nav-link" data-view="settings" onclick="goto('settings')">
+             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V12a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            <span>Settings</span>
+        </button>
+        <span id="notif-count"></span>
+    </div>
+
+    <!-- Logout Button -->
+    <button class="nav-link logout-btn" onclick="logout()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+        <span>Logout</span>
+    </button>
+</div>
+
+<div class="content-wrapper hide">
+    <button id="menu-toggle" class="menu-toggle">☰</button>
+    <div id="admin-bar" class="admin-bar"></div>
+    <div id="main-section" class="main"></div>
+</div>
+
+<script>
+// --- DATA & STATE MANAGEMENT ---
+let USERS = [];
+const CATEGORIES = ["Hardware","Software","Network"];
+const PRIORITIES = ["Low", "Medium", "High"];
+let userIdSeq = 3;
+let TICKETS = [];
+let ticketSeq = 2;
+let NOTIFICATIONS = [];
+let currentUser = null, currentView = 'dashboard', selectedTicket = null, showMyTickets=false;
+
+// --- DATA PERSISTENCE (localStorage) ---
+function saveData() {
+    try {
+        localStorage.setItem('quickdesk_users', JSON.stringify(USERS));
+        localStorage.setItem('quickdesk_tickets', JSON.stringify(TICKETS));
+        localStorage.setItem('quickdesk_userIdSeq', userIdSeq);
+        localStorage.setItem('quickdesk_ticketSeq', ticketSeq);
+    } catch (e) {
+        console.error("Could not save data to localStorage", e);
+    }
+}
+
+function loadData() {
+    const defaultUsers = [
+        {id:1, email:'admin@q.com', pass:'admin', name:'Adept Ant', role:'Admin', cat:'Hardware', lang:'English'},
+        {id:2, email:'support@q.com', pass:'support', name:'Helpful Bee', role:'Support Agent', cat:'Software', lang:'English'},
+        {id:3, email:'user@q.com', pass:'user', name:'ghostpreet', role:'End User', cat:'Network', lang:'English'}
+    ];
+    const defaultTickets = [
+        {id: 1, title: 'Is it good to use AI for hackathon?', desc: 'Should I rely on AI for hackathons or not?', category: 'Hardware', priority: 'High', tags: ['AI', 'hackathon'], up: 11, down: 2, status: 'Open', user: defaultUsers[2], date: '23 Jul 2024', thread: [
+            {from: 'Support Agent', msg: 'Yes, AI tools can boost productivity.', date: '24 Jul 2024'},
+            {from: 'ghostpreet', msg: 'Thanks! That helps.', date: '24 Jul 2024'}
+        ]},
+        {id: 2, title: 'How to restore lost files?', desc: '', category: 'Software', priority: 'Medium', tags: [], up: 5, down: 0, status: 'Resolved', user: defaultUsers[1], date: '22 Jul 2024', thread: []}
+    ];
+
+    try {
+        const savedUsers = localStorage.getItem('quickdesk_users');
+        const savedTickets = localStorage.getItem('quickdesk_tickets');
+        const savedUserIdSeq = localStorage.getItem('quickdesk_userIdSeq');
+        const savedTicketSeq = localStorage.getItem('quickdesk_ticketSeq');
+
+        USERS = savedUsers ? JSON.parse(savedUsers) : defaultUsers;
+        TICKETS = savedTickets ? JSON.parse(savedTickets) : defaultTickets;
+        userIdSeq = savedUserIdSeq ? parseInt(savedUserIdSeq, 10) : 3;
+        ticketSeq = savedTicketSeq ? parseInt(savedTicketSeq, 10) : 2;
+    } catch (e) {
+        console.error("Could not load data from localStorage, using defaults.", e);
+        USERS = defaultUsers;
+        TICKETS = defaultTickets;
+    }
+}
+
+/* --- DASHBOARD LOGIC (UPDATED) --- */
+function dashboardHTML(){
+  // Stats
+  const statOpen = TICKETS.filter(t => t.status === 'Open').length;
+  const statProg = TICKETS.filter(t => t.status === 'In Progress').length;
+  const statRes = TICKETS.filter(t => t.status === 'Resolved').length;
+
+  // Recent Tickets Table Rows
+  const recents = TICKETS.slice(-5).reverse().map(t => {
+      const ticketId = `TKT-${String(t.id).padStart(6, '0')}`;
+      let statusClass = t.status.toLowerCase().replace(' ', '-');
+      let priorityClass = t.priority.toLowerCase();
+
+      return `
+      <tr>
+        <td>${ticketId}</td>
+        <td style="max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${t.title}</td>
+        <td><span class="status ${statusClass}">${t.status}</span></td>
+        <td><span class="priority ${priorityClass}">${t.priority}</span></td>
+        <td>${t.date}</td>
+        <td>${t.up} / ${t.down}</td>
+      </tr>`
+  }).join('');
+  
+  // Keep pie chart logic
+  const priorityCounts = {
+    Low: TICKETS.filter(t => t.priority === 'Low').length,
+    Medium: TICKETS.filter(t => t.priority === 'Medium').length,
+    High: TICKETS.filter(t => t.priority === 'High').length,
+  };
+  
+  const agentPerformance = USERS.filter(u => u.role === 'Support Agent').map(agent => {
+      const resolvedCount = TICKETS.filter(t => t.status === 'Resolved' && t.thread.some(th => th.from === agent.name)).length;
+      return { name: agent.name, resolved: resolvedCount };
+  }).sort((a, b) => b.resolved - a.resolved);
+  
+  let activity = [];
+  for (let t of TICKETS) for (let c of t.thread) activity.push({ user: c.from, ticket: t.title, msg: c.msg, date: c.date });
+  activity = activity.slice(-5).reverse().map(
+    a => `<li><b>${a.user}</b> on <span style="color:#445;">"${a.ticket.length > 16 ? a.ticket.slice(0, 16) + '…' : a.ticket}"</span>
+      <span style="color:#888;float:right;font-size:0.9em;">${a.date}</span><br>
+      <i style="color:#666">${a.msg.length > 40 ? a.msg.slice(0, 40) + '…' : a.msg}</i>
+    </li>`
+  ).join('');
+
+  // Chart.js call
+  setTimeout(() => {
+    const ctx = document.getElementById('priorityChart');
+    if (ctx) {
+      if(window.myPriorityChart) {
+          window.myPriorityChart.destroy();
+      }
+      window.myPriorityChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels: ['Low', 'Medium', 'High'],
+          datasets: [{
+            label: 'Tickets by Priority',
+            data: [priorityCounts.Low, priorityCounts.Medium, priorityCounts.High],
+            backgroundColor: [ 'rgba(92, 184, 92, 0.7)', 'rgba(240, 173, 78, 0.7)', 'rgba(217, 83, 79, 0.7)' ],
+            borderColor: [ '#5CB85C', '#f0ad4e', '#D9534F' ],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'top' },
+            title: { display: true, text: 'Tickets by Priority' }
+          }
+        }
+      });
+    }
+  }, 0);
+    
+  return `
+  <div class="main-header">
+    <h1>Dashboard</h1>
+    <div class="header-actions">
+        <svg class="notification-bell" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+    </div>
+  </div>
+
+  <div class="quickdash-row">
+    <div class="quickdash-main-new">
+        <div class="stat-cards-grid">
+            <div class="stat-card">
+                <div class="stat-card-info">
+                    <span class="lbl">Open Tickets</span>
+                    <span class="val">${statOpen}</span>
+                </div>
+                <div class="stat-card-icon open">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-info">
+                    <span class="lbl">In Progress</span>
+                    <span class="val">${statProg}</span>
+                </div>
+                <div class="stat-card-icon progress">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"></path></svg>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-info">
+                    <span class="lbl">Resolved</span>
+                    <span class="val">${statRes}</span>
+                </div>
+                <div class="stat-card-icon resolved">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="recent-tickets-card">
+            <div class="recent-tickets-header">
+                <h2>Recent Tickets</h2>
+                <div class="recent-tickets-actions">
+                    <select>
+                        <option>All Tickets</option>
+                    </select>
+                    <button class="btn btn-hollow" onclick="render()"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg> Refresh</button>
+                </div>
+            </div>
+            <div class="table-wrapper">
+                <table class="tickets-table">
+                    <thead>
+                        <tr>
+                            <th>Ticket ID</th>
+                            <th>Subject</th>
+                            <th>Status</th>
+                            <th>Priority</th>
+                            <th>Created</th>
+                            <th>Votes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${recents || '<tr><td colspan="6" style="text-align:center; color: #999; padding: 20px;">No recent tickets.</td></tr>'}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="quickdash-side">
+        <div>
+            <div class="dash-side-section-hdr">Tickets by Priority</div>
+            <div style="position: relative; height:250px">
+                <canvas id="priorityChart"></canvas>
+            </div>
+        </div>
+        <div>
+            <div class="dash-side-section-hdr">Agent Performance</div>
+            <ul class="dash-activity">
+                ${agentPerformance.map(agent => `<li><b>${agent.name}</b><span style="float:right;">${agent.resolved} resolved</span></li>`).join('')}
+            </ul>
+        </div>
+        <div>
+            <div class="dash-side-section-hdr">Recent Activity</div>
+            <ul class="dash-activity">${activity||'<li style="color:#aaa;">No activity yet.</li>'}</ul>
+        </div>
+    </div>
+  </div>`;
+}
+
+/* --- All other code below is unchanged for completeness --- */
+function ticketsHTML(){let q=document.getElementById('filter-q')?.value.toLowerCase()||'';let cat=document.getElementById('filter-cat')?.value||'';let stat=document.getElementById('filter-stat')?.value||'';let rows=TICKETS.filter(t=>
+(!cat||t.category===cat)&&(!stat||t.status===stat)&&(!q||t.title.toLowerCase().includes(q))
+).map(t=>`
+<li class="ticket-item" style="background: var(--bg-card); padding: 16px; border-radius: 12px; margin-bottom: 12px; border: 1px solid var(--border-color); list-style:none;">
+    <div style="display:flex; align-items:center; gap: 12px;">
+        <span class="profile-img" style="width:40px; height:40px; font-size:1.5em; margin:0;">${(t.user.name||'A')[0]}</span>
+        <div style="flex:1;">
+            <b style="font-size: 1.1em; color: var(--primary);">${t.title}</b><br/>
+            <div style="font-size:0.9em; margin-top:4px; color: var(--text-light);">
+                <span class="badge">${t.category}</span> by <b>${t.user.name}</b> on ${t.date}
+            </div>
+        </div>
+        <div style="text-align:right;">
+            <span class="status ${t.status.toLowerCase().replace(' ', '-')}">${t.status}</span>
+            <div class="ticket-actions" style="margin-top: 8px; display:flex; gap: 8px;">
+                <button class="btn-hollow" style="padding: 5px 10px;" onclick="upvote(${t.id})">▲ ${t.up}</button>
+                <button class="btn-hollow" style="padding: 5px 10px;" onclick="downvote(${t.id})">▼ ${t.down}</button>
+                <button class="btn" style="padding: 5px 10px;" onclick="openTicket(${t.id})">Details</button>
+            </div>
+        </div>
+    </div>
+</li>
+`).join('');return`
+<div class="main-header"><h1>Tickets</h1></div>
+<div class="col" style="margin-bottom: 16px;">
+<form oninput="goto('questions')" style="display: grid; grid-template-columns: 1fr auto auto; gap: 12px; align-items: center;">
+<input id="filter-q" placeholder="Search tickets by title..." value="${q||''}" style="margin:0;">
+<select id="filter-cat" style="margin:0;"><option value="">All Categories</option>${CATEGORIES.map(c=>`<option${cat===c?' selected':''}>${c}</option>`)}</select>
+<select id="filter-stat" style="margin:0;">
+<option value="">All Status</option>
+<option${stat==='Open'?' selected':''}>Open</option>
+<option${stat==='In Progress'?' selected':''}>In Progress</option>
+<option${stat==='Resolved'?' selected':''}>Resolved</option>
+<option${stat==='Closed'?' selected':''}>Closed</option>
+</select>
+</form>
+</div>
+<div class="col col-lg" style="padding:0; background:none; border:none; box-shadow:none;">
+<ul style="margin:0; padding:0;">${ rows || "<i style='color:#aaa; padding: 20px;'>No tickets found.</i>" }</ul>
+</div>`;}
+function upvote(id){let t=TICKETS.find(x=>x.id===id);t.up++;saveData();render();}
+function downvote(id){let t=TICKETS.find(x=>x.id===id);t.down++;saveData();render();}
+function openTicket(id){selectedTicket=id;currentView='ticketdetail';render();}
+function askHTML(){return`
+<div class="main-header"><h1>Raise a New Ticket</h1></div>
+<div class="col col-lg form-ct" style="max-width:600px;margin:auto;">
+<form id="ask-form" autocomplete="off">
+<label for="ask-title">Title</label><input id="ask-title" required>
+<label for="ask-desc">Description (Optional)</label><textarea id="ask-desc" rows="4"></textarea>
+<label for="ask-cat">Category</label>
+<select id="ask-cat" required><option value="">Select a category...</option>${CATEGORIES.map(c=>`<option>${c}</option>`)}</select>
+<label for="ask-priority">Priority</label>
+<select id="ask-priority" required><option value="">Select a priority...</option>${PRIORITIES.map(p=>`<option>${p}</option>`)}</select>
+<label for="ask-tags">Tags</label><input id="ask-tags" placeholder="e.g. printing, wifi, error">
+<button class="btn" style="width:100%; margin-top:10px; padding: 12px;">Post Ticket</button>
+</form>
+</div>`;}
+function ticketDetailHTML(t){return`
+<div class="main-header"><h1>Ticket Details</h1></div>
+<div class="col col-lg form-ct" style="max-width:700px;margin:auto;">
+<div style="border-bottom: 1px solid var(--border-color); padding-bottom: 16px; margin-bottom: 16px;">
+    <h2 style="color: var(--primary); margin-bottom: 8px;">${t.title}</h2>
+    <div>
+        <span class="badge">${t.category}</span>
+        <span class="priority ${t.priority.toLowerCase()}">${t.priority}</span>
+        <span class="status ${t.status.toLowerCase().replace(' ', '-')}">${t.status}</span>
+        by <b>${t.user.name}</b>, on ${t.date}
+        ${(currentUser&&currentUser.id===t.user.id&&t.status==='Open')?
+        `<button class="btn btn-hollow" style="float:right;" onclick="closeTicket(${t.id})">Close Ticket</button>`:''}
+    </div>
+</div>
+<div style="color:var(--text-light); margin:10px 0 24px 0;">${t.desc||'No description provided.'}</div>
+<h3 style="margin-bottom: 12px;">Conversation Thread</h3>
+<ul class="thread" style="list-style:none; padding:0; margin:0;">${t.thread.map(e=>`
+<li style="margin-bottom: 12px; padding: 12px; border-radius: 8px; background: ${e.from === currentUser.name ? '#f0f4ff' : '#f8f9fa'}; border: 1px solid var(--border-color);">
+<b>${e.from}</b>: ${e.msg}
+<br><span style="font-size:0.9em;color:var(--text-light);">${e.date}</span>
+</li>`).join('')}
+</ul>
+<form id="reply-form" style="margin-top:24px; display:flex; gap:12px;"><input id="reply-msg" placeholder="Write your reply..." style="margin:0; flex:1;"><button class="btn">Send</button></form>
+</div>`;}
+function closeTicket(id){let t=TICKETS.find(x=>x.id===id);if(t)t.status='Closed';saveData();render();}
+function onAskSubmit(evt){evt.preventDefault();
+let title=document.getElementById('ask-title').value.trim();
+let desc=document.getElementById('ask-desc').value.trim();
+let cat=document.getElementById('ask-cat').value;
+let priority=document.getElementById('ask-priority').value;
+let tags=document.getElementById('ask-tags').value.split(',').map(x=>x.trim()).filter(Boolean);
+ticketSeq++;
+TICKETS.push({id:ticketSeq,title,desc,category:cat,priority,tags,up:0,down:0,status:'Open',user:currentUser,date:'Today',thread:[{from:currentUser.name,msg:desc||"No details",date:'Today'}]});
+saveData();
+showModal('Ticket created successfully!');currentView = 'questions';render();}
+function onReplySubmit(evt){evt.preventDefault();let t=TICKETS.find(x=>x.id===selectedTicket),msg=document.getElementById('reply-msg').value.trim();
+if(msg){t.thread.push({from:currentUser.name,msg,date:'Today'});saveData();}render();}
+function profileHTML(){return`
+<div class="main-header"><h1>My Profile</h1></div>
+<div class="col col-lg form-ct" style="max-width:420px; margin:auto;">
+<div style="display:flex;align-items:center;gap:16px; margin-bottom: 24px;">
+<span class="profile-img">${currentUser.name[0]}</span>
+<div>
+<h2 style="margin:0; color:var(--primary);">${currentUser.name}</h2>
+<span class="badge">${currentUser.role}</span>
+<span class="badge" style="background:#e8f5e9;color:#2e7d32;">${currentUser.cat} Expert</span>
+</div>
+</div>
+<form id="profile-form">
+<label for="pf-name">Name</label><input id="pf-name" value="${currentUser.name}" required>
+<label>Email</label><input value="${currentUser.email}" disabled style="background:#eee;">
+<label for="pf-cat">Primary Category</label>
+<select id="pf-cat">${CATEGORIES.map(c=>`<option${currentUser.cat===c?' selected':''}>${c}</option>`)}</select>
+<label for="pf-lang">Language</label><select id="pf-lang"><option>English</option><option>Hindi</option></select>
+<button class="btn" style="width:100%; margin-top:10px;">Save Changes</button>
+</form>
+</div>`;}
+function settingsHTML(){return`
+<div class="main-header"><h1>Settings</h1></div>
+<div class="col col-lg form-ct" style="max-width:600px;margin:auto;">
+<p>Settings page is under construction.</p>
+</div>`;}
+function onProfileSave(evt){evt.preventDefault();currentUser.name=document.getElementById('pf-name').value;currentUser.cat=document.getElementById('pf-cat').value;saveData();showModal('Profile updated!');}
+function adminBarHTML(){return `<span class="badge" style="background:var(--danger);color:#fff;font-size:1em;">Admin Panel</span>
+<button class='btn btn-hollow' onclick="goto('usermanage')">Manage Users</button>
+<button class='btn btn-hollow' onclick="goto('catmanage')">Manage Categories</button>
+<span style="flex:1; text-align:right; color: var(--text-light);">Logged in as: <b>${currentUser.name}</b></span>`;}
+function userManageHTML(){return `
+<div class="main-header"><h1>User Management</h1></div>
+<div class="col col-lg">
+<table class="dash-section-table">
+<thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Action</th></tr></thead>
+<tbody>
+${USERS.map(u=>`<tr><td>${u.name}</td><td>${u.email}</td><td>${u.role}</td><td>${u.role==='End User'?'<button class="btn" onclick="upgradeUser('+u.id+')">Upgrade to Agent</button>':'-'}</td></tr>`).join('')}
+</tbody>
+</table>
+</div>`;}
+function catManageHTML(){return`
+<div class="main-header"><h1>Category Management</h1></div>
+<div class="col col-lg">
+<table class="dash-section-table" style="max-width: 400px; margin-bottom: 24px;">
+    <thead><tr><th>Name</th><th>Action</th></tr></thead>
+    <tbody>${CATEGORIES.map(c=>`<tr><td>${c}</td><td><button class="btn btn-hollow" onclick="editCat('${c}')">Edit</button></td></tr>`).join('')}</tbody>
+</table>
+<form onsubmit="addCat(event)" style="display:flex; gap:12px; max-width: 400px;">
+    <input id="new-cat" placeholder="Add new category" style="margin:0; flex:1;">
+    <button type="submit" class="btn">Add</button>
+</form>
+</div>`;}
+function upgradeUser(id){let u=USERS.find(x=>x.id===id);if(u)u.role='Support Agent';saveData();render();}
+function editCat(cat){showModal('Editing categories is a premium feature.');}
+function addCat(event){event.preventDefault(); let v=document.getElementById('new-cat').value.trim();
+if(v&&CATEGORIES.indexOf(v)===-1){CATEGORIES.push(v);saveData();render();document.getElementById('new-cat').value='';}
+}
+function updateNotifications(){let n=NOTIFICATIONS.filter(n=>n.unread).length;
+document.getElementById('notif-count').innerHTML=n?'<span class="badge" style="background:var(--danger);color:#fff;">'+n+'</span>':'';}
+function goto(view){currentView = view;selectedTicket = null;if(view==='questions')showMyTickets=false;render();}
+function toggleAuth(type){
+    const isLogin = type === 'login';
+    document.getElementById('login-form').classList.toggle('hide', !isLogin);
+    document.getElementById('register-form').classList.toggle('hide', isLogin);
+    document.getElementById('show-login-btn').classList.toggle('btn-hollow', !isLogin);
+    document.getElementById('show-login-btn').classList.toggle('btn', isLogin);
+    document.getElementById('show-register-btn').classList.toggle('btn-hollow', isLogin);
+    document.getElementById('show-register-btn').classList.toggle('btn', !isLogin);
+    document.querySelector('.auth-card h2').textContent = isLogin ? 'QuickDesk Login' : 'Create an Account';
+}
+toggleAuth('login');
+function showModal(msg){document.getElementById('modal-bg').style.display='flex';
+document.getElementById('modal-message').textContent = msg;}
+function closeModal(){document.getElementById('modal-bg').style.display='none';}
+function onLogin(evt){evt.preventDefault();let em=document.getElementById('login-email').value.trim(),
+pw=document.getElementById('login-password').value.trim();
+let u=USERS.find(u=>u.email===em&&u.pass===pw);if(!u){document.getElementById('login-error').style.display='block';
+document.getElementById('login-error').textContent='Invalid credentials';return;}
+currentUser=u;
+render();}
+function onRegister(evt){evt.preventDefault();
+let name=document.getElementById('reg-name').value.trim();
+let email=document.getElementById('reg-email').value.trim();
+let role=document.getElementById('reg-role').value;
+let pass=document.getElementById('reg-password').value;
+if(!name||!email||!pass){document.getElementById('register-error').style.display='block';
+document.getElementById('register-error').textContent = "All fields required";return;}
+if(USERS.find(u=>u.email===email)){document.getElementById('register-error').style.display='block';
+document.getElementById('register-error').textContent="Email already registered";return;}
+userIdSeq++;
+let u={id:userIdSeq,email,pass,name,role,cat:"Hardware",lang:"English"};
+USERS.push(u);
+saveData();
+showModal("Registered! You may now log in.");toggleAuth('login');
+document.getElementById('register-form').reset();document.getElementById('register-error').style.display='none';}
+function logout(){
+    currentUser = null;
+    localStorage.removeItem('quickdesk_currentUser');
+    document.getElementById('sidebar-profile').innerHTML = '';
+    render();
+}
+function render(){
+  if(!currentUser && currentView !== 'login') {
+      const savedUser = localStorage.getItem('quickdesk_currentUser');
+      if (savedUser) {
+          currentUser = JSON.parse(savedUser);
+      }
+  }
+  if (currentUser) {
+      localStorage.setItem('quickdesk_currentUser', JSON.stringify(currentUser));
+      document.getElementById('auth-section').classList.add('hide');
+      document.getElementById('sidebar').classList.remove('hide');
+      document.querySelector('.content-wrapper').classList.remove('hide');
+      
+      document.getElementById('sidebar-profile').innerHTML = `
+        <div class="avatar">${currentUser.name[0].toUpperCase()}</div>
+        <div class="user-info">
+            <div class="user-name">${currentUser.name}</div>
+            <div class="user-role">${currentUser.role}</div>
+        </div>
+      `;
+
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.remove('active');
+        if (link.dataset.view === currentView) {
+            link.classList.add('active');
+        }
+      });
+
+  } else {
+      document.getElementById('auth-section').classList.remove('hide');
+      document.getElementById('sidebar').classList.add('hide');
+      document.querySelector('.content-wrapper').classList.add('hide');
+      return;
+  }
+
+  updateNotifications();
+  document.getElementById('admin-bar').classList.toggle('hide',currentUser.role!=='Admin');
+  if(currentUser.role==='Admin') document.getElementById('admin-bar').innerHTML=adminBarHTML();
+  let m=document.getElementById('main-section');
+  if(currentView==='dashboard') m.innerHTML=dashboardHTML();
+  else if(currentView==='questions') m.innerHTML=ticketsHTML();
+  else if(currentView==='ask'){m.innerHTML=askHTML();document.getElementById('ask-form').onsubmit=onAskSubmit;}
+  else if(currentView==='profile'){m.innerHTML=profileHTML();document.getElementById('profile-form').onsubmit=onProfileSave;}
+  else if(currentView==='settings'){m.innerHTML=settingsHTML();}
+  else if(currentView==='ticketdetail'){
+    let t=TICKETS.find(x=>x.id===selectedTicket);
+    m.innerHTML=ticketDetailHTML(t);
+    document.getElementById('reply-form').onsubmit=onReplySubmit;}
+  else if(currentView==='usermanage')m.innerHTML=userManageHTML();
+  else if(currentView==='catmanage')m.innerHTML=catManageHTML();}
+
+// --- INITIALIZATION ---
+document.addEventListener('DOMContentLoaded', () => {
+    loadData();
+    document.getElementById('login-form').onsubmit=onLogin;
+    document.getElementById('register-form').onsubmit=onRegister;
+    
+    const sidebar = document.getElementById('sidebar');
+    const menuToggle = document.getElementById('menu-toggle');
+
+    if (menuToggle) {
+        menuToggle.onclick = () => {
+            sidebar.classList.toggle('open');
+        };
+    }
+
+    document.addEventListener('click', function(event) {
+        if (!sidebar || !menuToggle) return;
+        const isClickInsideSidebar = sidebar.contains(event.target);
+        const isClickOnToggle = menuToggle.contains(event.target);
+        if (!isClickInsideSidebar && !isClickOnToggle && sidebar.classList.contains('open')) {
+            sidebar.classList.remove('open');
+        }
+    });
+
+    const savedUser = localStorage.getItem('quickdesk_currentUser');
+    if (savedUser) {
+        currentUser = JSON.parse(savedUser);
+        currentView = 'dashboard';
+        render();
+    }
+});
+</script>
+</body>
+</html>
